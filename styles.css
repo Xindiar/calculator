@@ -33,6 +33,7 @@ body{
     background-color: rgb(255, 255, 255);
     border: 4px solid rgb(82, 74, 74);
     border-radius: 10px;
+    display: flex;
 }
 
 #buttons{
@@ -82,4 +83,8 @@ body{
 
 .input-buttons:active .front {
     transform: translateY(-2px);
+  }
+
+  p {
+    font-family: 'Orbitron', sans-serif;
   }
