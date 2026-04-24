@@ -319,7 +319,11 @@ function addSubs(int1 , int2 , equation) {
 function divMul(int1 , int2 , equation){
     if(int2 == undefined ){
         int2 = 1 ;
-    }  
+    } 
+    if(int2 == "0"){
+        alert("replacing 0 with 1");
+        int2 =1;
+    } 
     if(equation == "/"){
         let temp = parseFloat(int1) / parseFloat(int2);
         let result = temp.toFixed(3);
