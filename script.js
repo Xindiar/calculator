@@ -27,13 +27,23 @@ function buttonClicked(arg){
         case'9':
         case '0':
         case ".":
+            if(isBracket){
+                pAddNumber(arg);
+            }else{
                 addnumber(arg);
+            }
+                
                 break;
 
         case"+" :
         case"/" :
         case "*" :
-             equation(arg);
+            if(isBracket){
+                pEquation(arg);
+            }else{
+                equation(arg);
+            }
+
              break;
 
         case "AC" :
@@ -61,11 +71,20 @@ function buttonClicked(arg){
 }
 
 function negativeInput(arg){
-    if(isNeg){
+    if(isBracket){
+        if(isNeg){
+        pAddNumber(arg);
+    }else{
+        pEquation(arg);
+    }
+    }else{
+        if(isNeg){
         addnumber(arg);
     }else{
         equation(arg);
     }
+    }
+    
 }
 
 function addnumber(arg){
@@ -86,7 +105,28 @@ function addnumber(arg){
         currentInput = currentInput + arg;
     }
     
-    isNeg = false
+    isNeg = false;
+}
+
+function pAddNumber(arg){
+    if(arg == "."){
+        
+         if(isDecimal){
+            alert("Cannot add 2 decimal points");
+        }else{
+            if(pCurrentInput.length == 0){
+                pCurrentInput = "0.";
+                isDecimal = true;
+            }else{
+            pCurrentInput = pCurrentInput + arg;
+            isDecimal = true;
+        }
+        }
+    }else{
+        pCurrentInput = pCurrentInput + arg;
+    }
+    console.log(pCurrentInput);
+    isNeg = false;
 }
 
 function equation(arg){
@@ -97,7 +137,28 @@ function equation(arg){
     isDecimal = false;
     Arr.push(arg);
 
-    calculator(calculationArr , Arr);
+    sum = calculator(calculationArr , Arr);
+    }else{
+       
+        if(isEqual){
+            reset();
+        }
+         alert("No Input provided!!");
+    
+    }
+}
+
+function pEquation(arg){
+    console.log(pCurrentInput !="");
+    if(pCurrentInput != ""){
+    pCalculationArr.push(pCurrentInput);
+    console.log(pCalculationArr);
+    pCurrentInput = "";
+    isNeg = true;
+    isDecimal = false;
+    pArr.push(arg);
+
+     pSum =calculator(pCalculationArr , pArr);
     }else{
        
          console.log(isEqual);
@@ -124,17 +185,40 @@ function reset(){
         
     }
     currentInput = "";
+    if(pCalculationArr.length > 0){
+        pCalculationArr.length = 0;
+    }
+    if(pArr.length > 0){
+        pArr.length = 0;
+    }
+    pCurrentInput = "";
+    pSum= undefined;
+    isBracket = false;
+    isNeg = true;
+    isDecimal = false;
+    isEqual = false;
+
+
 }
 
 
 function bracketFunction(){
     if(isBracket){
+        isEqual = true;
+        pEquation("+");
         isBracket = false;
-        Arr.push(")");
+        currentInput = pSum +"";
+        console.log(currentInput);
+        pSum = undefined;
+        pCurrentInput = "";
+        isEqual=false;
+        isNeg = false;
 
     }else{
-        isBracket = true;
-        Arr.push("(");
+        isBracket = true;  
+        if(currentInput != ""){
+    calculationArr.push(currentInput);
+        }
     }
 }
 
@@ -149,26 +233,100 @@ function solution(){
 }
 
 function calculator(inputArray , equationArr){
-console.log(Arr);
 
+let tempSum = 0;
+let temp = 0;
 
-let tempArr = inputArray;
+let tempArr = Array.from(inputArray);
+let tempEqArr = Array.from(equationArr) ;
   console.log(inputArray);
+  console.log(equationArr);
 
-if(Arr.includes("/") || Arr.includes("*")){
+if(isEqual){
+    //Dividing first 
+    for(let i=0 ; i<equationArr.length ;i++){
+        if(equationArr.at(i) == "/"){
+            temp = divMul(inputArray.at(i) , inputArray.at(i+1),equationArr.at(i))
+            console.log(temp);
+            inputArray.splice(i,2,temp);
+            console.log(inputArray);
+            equationArr.splice(i,1);
+            
+            temp=0;
+            i=-1;
+        }
+    }
+    console.log(inputArray);
+       for(let i=0 ; i<equationArr.length ;i++){
+        if(equationArr.at(i) == "*"){
+            console.log(equationArr)
+            temp = divMul(inputArray.at(i) , inputArray.at(i+1),equationArr.at(i))
+            console.log(temp);
+            inputArray.splice(i,2,temp);
+            console.log(inputArray + " " + equationArr);
+           equationArr.splice(i,1);
+          console.log(equationArr);
+            console.log(inputArray+ " "+equationArr);
+            temp = 0;
+            i=-1;
+        }
 
+    }
+     console.log(inputArray + "   "+ equationArr);
+
+        for(let i = 0 ; i< equationArr.length ; i++){
+        tempSum = addSubs(inputArray.at(0),inputArray.at(1),equationArr.at(i));
+
+        inputArray = inputArray.slice(2);
+        console.log(tempSum);
+        inputArray.unshift(tempSum);
+        
+    
+
+    }
 }else{
-    for(let i = 0 ; i< equationArr.length ; i++){
-        sum = addSubs(tempArr.at(0),tempArr.at(1),equationArr.at(i));
+    for(let i=0 ; i<tempEqArr.length ;i++){
+        if(tempEqArr.at(i) == "/"){
+            temp = divMul(tempArr.at(i) , tempArr.at(i+1),tempEqArr.at(i))
+            console.log(temp);
+            tempArr.splice(i,2,temp);
+            console.log(tempArr);
+            tempEqArr.splice(i,1);
+            
+            i=-1;
+            tempSum = temp;
+            temp=0;
+        }
+    }
+       for(let i=0 ; i<tempEqArr.length ;i++){
+        if(tempEqArr.at(i) == "*"){
+            temp = divMul(tempArr.at(i) , tempArr.at(i+1),tempEqArr.at(i))
+            console.log(temp);
+            console.log(tempEqArr)
+            tempArr.splice(i,2,temp);
+            console.log(tempArr + " "+ tempEqArr );
+            tempEqArr.splice(i,1);
+            
+            console.log(tempEqArr + "   " + equationArr);
+            i=-1;
+            tempSum = temp;
+            temp = 0;
+        }
+    }
+    for(let i = 0 ; i< tempEqArr.length ; i++){
+        tempSum = 0;
+        tempSum = addSubs(tempArr.at(0),tempArr.at(1),tempEqArr.at(i));
 
         tempArr = tempArr.slice(2);
 
-        tempArr.unshift(sum);
+        tempArr.unshift(tempSum);
         
     
 
     }
 }
+
+return tempSum;
 
 }
 
@@ -177,9 +335,26 @@ function addSubs(int1 , int2 , equation) {
         int2 = 0;
     }
     if(equation == "+"){
-        return parseInt(int1) + parseInt(int2);
+        return parseFloat(int1) + parseFloat(int2);
     }else if(equation == "-"){
-        return parseInt(int1) - parseInt(int2);
+        return parseFloat(int1) - parseFloat(int2);
+    }
+}
+
+function divMul(int1 , int2 , equation){
+    if(int2 == undefined ){
+        int2 = 1 ;
+    }  
+    console.log(parseFloat(int1) +" "+ equation+" "+ parseFloat(int2));
+    if(equation == "/"){
+        let temp = parseFloat(int1) / parseFloat(int2);
+        let result = temp.toFixed(3);
+        return result+"";
+    }else if(equation == "*"){
+        let temp = parseFloat(int1) * parseFloat(int2);
+        let result = temp.toFixed(3);
+        return result+"";
+        
     }
 }
 
@@ -195,7 +370,12 @@ displayOutput.style.margin = "2px";
 displayOutput.style.color = "grey";
 displayOutput.style.height = "27.5px";
 button.addEventListener("click", function (){
-displayInput.textContent = currentInput;
+if(isBracket){
+    displayInput.textContent = pCurrentInput;
+}else{
+    displayInput.textContent = currentInput;
+}
+
 displayOutput.textContent = sum;
 if(isEqual){
     isEqual = false;
